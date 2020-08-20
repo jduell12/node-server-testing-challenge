@@ -25,12 +25,22 @@ describe("server", () => {
   });
 
   describe("POST /users", () => {
-    it("adds a user", async () => {
+    it("adds a user to an empty database", async () => {
       await supertest(server).post("/users").send({ name: "kelly" });
 
       //check data is in the database without using GET route
       const users = await db("users");
       expect(users).toHaveLength(1);
+    });
+
+    it("adds multiple users to a database", async () => {
+      await supertest(server).post("/users").send({ name: "kelly" });
+      await supertest(server).post("/users").send({ name: "sam" });
+      await supertest(server).post("/users").send({ name: "wolf" });
+
+      //check data is in the database without using GET route
+      const users = await db("users");
+      expect(users).toHaveLength(3);
     });
 
     it("returns 201 OK after adding user", async () => {
