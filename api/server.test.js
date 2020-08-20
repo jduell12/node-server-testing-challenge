@@ -23,4 +23,21 @@ describe("server", () => {
       expect(res.status).toBe(200);
     });
   });
+
+  describe("POST /users", () => {
+    it("adds a user", async () => {
+      await supertest(server).post("/users").send({ name: "kelly" });
+
+      //check data is in the database without using GET route
+      const users = await db("users");
+      expect(users).toHaveLength(1);
+    });
+
+    it("returns 201 OK after adding user", async () => {
+      const res = await supertest(server)
+        .post("/users")
+        .send({ name: "kelly" });
+      expect(res.status).toBe(201);
+    });
+  });
 });

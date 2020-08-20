@@ -11,4 +11,14 @@ router.get("/", (req, res) => {
     });
 });
 
+router.post("/", (req, res) => {
+  Users.addUser(req.body)
+    .then((users) => {
+      res.status(201).json(users);
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err.message });
+    });
+});
+
 module.exports = router;
