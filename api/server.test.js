@@ -40,4 +40,42 @@ describe("server", () => {
       expect(res.status).toBe(201);
     });
   });
+
+  describe("DELETE /users", () => {
+    it("deletes a user from a database containing one user", async () => {
+      //adds user to db
+      const users = await db("users").insert({ name: "kelly" });
+      //checks only 1 user in db
+      expect(users).toHaveLength(1);
+
+      await supertest(server).delete("/users").send({ name: "kelly" });
+      const userList = await db("users");
+      expect(userList).toHaveLength(0);
+    });
+
+    it("deletes a user from a database containing multiple users", async () => {
+      await db("users").insert({ name: "kelly" });
+      await db("users").insert({ name: "sam" });
+      await db("users").insert({ name: "wolf" });
+      const users = await db("users");
+      expect(users).toHaveLength(3);
+
+      await supertest(server).delete("/users").send({ name: "kelly" });
+      const userList = await db("users");
+      expect(userList).toHaveLength(2);
+    });
+
+    it("receives 200 OK after deleting using", async () => {
+      await db("users").insert({ name: "kelly" });
+      await db("users").insert({ name: "sam" });
+      await db("users").insert({ name: "wolf" });
+      const users = await db("users");
+      expect(users).toHaveLength(3);
+
+      const res = await supertest(server)
+        .delete("/users")
+        .send({ name: "kelly" });
+      expect(res.status).toBe(200);
+    });
+  });
 });
